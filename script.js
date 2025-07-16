@@ -69,3 +69,33 @@ document.getElementById("capture").addEventListener("click", () => {
     link.click();
   };
 });
+
+// キャラクター画像を順番に切り替える
+const characterImages = [
+  "images/deaver_default.png",
+  "images/deaver_front.png",
+  "images/deaver_left.png",
+  "images/deaver_right.png",
+];
+let currentIndex = 0;
+
+// 初期画像を設定
+character.src = characterImages[currentIndex];
+
+// タップで画像を切り替え（タッチ操作と競合しないよう工夫）
+let touchMoved = false;
+
+character.addEventListener("touchstart", () => {
+  touchMoved = false;
+});
+
+character.addEventListener("touchmove", () => {
+  touchMoved = true;
+});
+
+character.addEventListener("touchend", () => {
+  if (!touchMoved) {
+    currentIndex = (currentIndex + 1) % characterImages.length;
+    character.src = characterImages[currentIndex];
+  }
+});
