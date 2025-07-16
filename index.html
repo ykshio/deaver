@@ -9,17 +9,32 @@
 </head>
 
 <body>
-    <div id="container">
-        <video id="camera" autoplay playsinline></video>
-        <img id="character" src="images/deaver_default.png" alt="キャラクター" draggable="false" />
-        <button id="capture">
-            <img src="images/camera.svg" alt="写真を撮る" />
-        </button>
+  <div id="container">
+    <video id="camera" autoplay playsinline></video>
+    <img id="character" src="images/deaver_default.png" alt="キャラクター" draggable="false" />
+    <button id="capture">
+      <img src="images/camera.svg" alt="写真を撮る" />
+    </button>
 
-        <canvas id="canvas" style="display: none;"></canvas>
+    <canvas id="canvas" style="display: none;"></canvas>
+  </div>
+
+  <!-- 操作説明モーダル -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2>操作方法</h2>
+      <ul>
+        <li>キャラクターをドラッグして移動</li>
+        <li>ピンチでキャラクターの大きさを変更</li>
+        <li>キャラクターをタップして画像を切り替え</li>
+        <li>カメラボタンを押して写真を撮影</li>
+      </ul>
+      <button id="closeModal">閉じる</button>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
+
 
 </html>

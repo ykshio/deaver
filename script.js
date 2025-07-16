@@ -99,3 +99,12 @@ character.addEventListener("touchend", () => {
     character.src = characterImages[currentIndex];
   }
 });
+
+window.addEventListener("load", () => {
+  const modal = document.getElementById("modal");
+  const closeBtn = document.getElementById("closeModal");
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+});
