@@ -2,17 +2,21 @@ const video = document.getElementById("camera");
 const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
 
-// カメラ起動（解像度を指定）
+const STANDARD_WIDTH = 4032;
+const STANDARD_HEIGHT = 3024;
+
+// カメラ起動（できるだけ高解像度をリクエスト）
 navigator.mediaDevices.getUserMedia({
   video: {
     facingMode: "environment",
-    width: { ideal: 1920 },
-    height: { ideal: 1080 }
+    width: { ideal: STANDARD_WIDTH },
+    height: { ideal: STANDARD_HEIGHT }
   },
   audio: false
 })
   .then(stream => {
     video.srcObject = stream;
+    video.play();
   })
   .catch(err => {
     alert("カメラへのアクセスが拒否されました");
@@ -52,28 +56,27 @@ character.addEventListener("touchmove", e => {
 
 // 写真撮影
 document.getElementById("capture").addEventListener("click", () => {
-  const videoWidth = video.videoWidth;
-  const videoHeight = video.videoHeight;
-
-  canvas.width = videoWidth;
-  canvas.height = videoHeight;
+  // CanvasはiPhone標準サイズ固定
+  canvas.width = STANDARD_WIDTH;
+  canvas.height = STANDARD_HEIGHT;
 
   const ctx = canvas.getContext("2d");
 
-  // video要素の画面上でのサイズ（CSSサイズ）
+  // videoの画面上の表示サイズを取得（CSSサイズ）
   const videoRect = video.getBoundingClientRect();
 
-  // videoの実解像度と表示サイズの比率
-  const scaleX = videoWidth / videoRect.width;
-  const scaleY = videoHeight / videoRect.height;
+  // videoの実解像度はvideo.videoWidth/Height（取得できない場合もあり）
+  // ここではcanvas固定サイズに引き伸ばすため、スケールはcanvasサイズ / videoRectサイズで計算
+  const scaleX = STANDARD_WIDTH / videoRect.width;
+  const scaleY = STANDARD_HEIGHT / videoRect.height;
 
-  // 動画をキャンバスにフル描画
-  ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+  // video映像をcanvas全体に引き伸ばし描画
+  ctx.drawImage(video, 0, 0, STANDARD_WIDTH, STANDARD_HEIGHT);
 
-  // キャラクターの画面上の位置・サイズ
+  // キャラクターの画面上での位置とサイズ
   const charRect = character.getBoundingClientRect();
 
-  // キャンバス上でのキャラの位置・サイズに換算
+  // キャラクターの座標・サイズをcanvasのスケールに合わせて計算
   const charX = (charRect.left - videoRect.left) * scaleX;
   const charY = (charRect.top - videoRect.top) * scaleY;
   const charWidth = charRect.width * scaleX;
@@ -84,7 +87,7 @@ document.getElementById("capture").addEventListener("click", () => {
   img.onload = () => {
     ctx.drawImage(img, charX, charY, charWidth, charHeight);
 
-    // 保存処理
+    // ダウンロード
     const link = document.createElement("a");
     link.download = "photo.png";
     link.href = canvas.toDataURL("image/png");
