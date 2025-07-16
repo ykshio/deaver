@@ -100,11 +100,3 @@ character.addEventListener("touchend", () => {
   }
 });
 
-window.addEventListener("load", () => {
-  const modal = document.getElementById("modal");
-  const closeBtn = document.getElementById("closeModal");
-
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-});
