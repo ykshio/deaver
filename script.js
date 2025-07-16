@@ -2,8 +2,15 @@ const video = document.getElementById("camera");
 const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
 
-// カメラ起動
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
+// カメラ起動（解像度を指定）
+navigator.mediaDevices.getUserMedia({
+  video: {
+    facingMode: "environment",
+    width: { ideal: 1920 },
+    height: { ideal: 1080 }
+  },
+  audio: false
+})
   .then(stream => {
     video.srcObject = stream;
   })
@@ -45,24 +52,39 @@ character.addEventListener("touchmove", e => {
 
 // 写真撮影
 document.getElementById("capture").addEventListener("click", () => {
-  const w = video.videoWidth;
-  const h = video.videoHeight;
-  canvas.width = w;
-  canvas.height = h;
+  const videoWidth = video.videoWidth;
+  const videoHeight = video.videoHeight;
+
+  canvas.width = videoWidth;
+  canvas.height = videoHeight;
+
   const ctx = canvas.getContext("2d");
 
-  ctx.drawImage(video, 0, 0, w, h);
+  // video要素の画面上でのサイズ（CSSサイズ）
+  const videoRect = video.getBoundingClientRect();
 
-  // キャラクター位置・サイズをcanvasに描画
-  const rect = character.getBoundingClientRect();
+  // videoの実解像度と表示サイズの比率
+  const scaleX = videoWidth / videoRect.width;
+  const scaleY = videoHeight / videoRect.height;
+
+  // 動画をキャンバスにフル描画
+  ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+
+  // キャラクターの画面上の位置・サイズ
+  const charRect = character.getBoundingClientRect();
+
+  // キャンバス上でのキャラの位置・サイズに換算
+  const charX = (charRect.left - videoRect.left) * scaleX;
+  const charY = (charRect.top - videoRect.top) * scaleY;
+  const charWidth = charRect.width * scaleX;
+  const charHeight = charRect.height * scaleY;
+
   const img = new Image();
   img.src = character.src;
   img.onload = () => {
-    const scaleRatio = character.width / img.width;
-    ctx.drawImage(img,
-      rect.left, rect.top,
-      img.width * scaleRatio, img.height * scaleRatio);
+    ctx.drawImage(img, charX, charY, charWidth, charHeight);
 
+    // 保存処理
     const link = document.createElement("a");
     link.download = "photo.png";
     link.href = canvas.toDataURL("image/png");
@@ -99,4 +121,3 @@ character.addEventListener("touchend", () => {
     character.src = characterImages[currentIndex];
   }
 });
-
