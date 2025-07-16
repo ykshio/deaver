@@ -37,14 +37,22 @@ button#capture {
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  background: transparent;
+
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: white;
   border: none;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 button#capture img {
-  width: 64px;
-  height: 64px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.4));
+  pointer-events: none;
 }
