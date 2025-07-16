@@ -3,12 +3,13 @@ body, html {
   padding: 0;
   overflow: hidden;
   font-family: sans-serif;
+  height: 100%;
 }
 
 #container {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh; /* 修正: モバイルブラウザの表示領域に対応 */
   background: black;
 }
 
@@ -32,10 +33,14 @@ video#camera {
 
 button#capture {
   position: absolute;
-  bottom: 10px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* 修正: 安全領域を考慮して20px上に */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   padding: 10px 20px;
   font-size: 18px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
 }
