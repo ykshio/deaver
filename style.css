@@ -33,7 +33,7 @@ video#camera {
 
 button#capture {
   position: absolute;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px)); /* 修正: 安全領域を考慮して20px上に */
+  bottom: calc(70px + env(safe-area-inset-bottom, 0px)); /* 修正: 安全領域を考慮して20px上に */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
