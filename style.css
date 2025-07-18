@@ -1,16 +1,18 @@
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   overflow: hidden;
   font-family: sans-serif;
   height: 100%;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 #container {
   position: relative;
   width: 100vw;
-  height: 100dvh; /* 修正: モバイルブラウザの表示領域に対応 */
+  height: 100dvh;
+  /* 修正: モバイルブラウザの表示領域に対応 */
   background: black;
 }
 
