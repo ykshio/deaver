@@ -91,9 +91,43 @@
                 window.open(url, "_blank");
             });
         });
+        // ローディング画面の表示時間を制御
         window.addEventListener("load", () => {
-            document.getElementById("loading").style.display = "none";
+            const loading = document.getElementById("loading");
+
+            // 最低1秒表示
+            const MIN_LOADING_TIME = 1000;
+            const start = performance.now();
+
+            // 他の初期化処理（例：モーダルやイベントなど）
+            const modal = document.getElementById("modal");
+            const closeBtn = document.getElementById("closeModal");
+            closeBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+
+            document.getElementById("openModal").addEventListener("click", () => {
+                modal.style.display = "flex";
+            });
+
+            // Tweet投稿処理
+            document.getElementById("tweet").addEventListener("click", () => {
+                const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                window.open(url, "_blank");
+            });
+
+            // 最低表示時間を確保してからローディング非表示
+            const elapsed = performance.now() - start;
+            const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
+
+            setTimeout(() => {
+                loading.classList.add("hide");
+                setTimeout(() => loading.style.display = "none", 500); // フェード完了後に非表示
+            }, delay);
+
         });
+
 
     </script>
 
