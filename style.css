@@ -289,3 +289,39 @@ button#capture img {
 #shareMenu.active {
   display: flex;
 }
+
+/* メニューバー右下ボタン配置用 */
+#menuBar .right {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+#menuBar .right button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+}
+
+/* 投稿ボタンを画面右上に固定表示 */
+#tweet.topRight {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.6); /* 背景追加で視認性アップ */
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 999;
+}
+#tweet.topRight img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}

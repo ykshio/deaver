@@ -169,37 +169,35 @@ if ('serviceWorker' in navigator) {
     .catch(console.error);
 }
 
-// カメラ切替機能
-let currentFacing = "environment";
+let useFrontCamera = false;
 
-async function startCamera(facingMode = "environment") {
-  if (video.srcObject) {
-    video.srcObject.getTracks().forEach((track) => track.stop());
-  }
-
+async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: { exact: facingMode },
+        facingMode: useFrontCamera ? "user" : { exact: "environment" },
         width: { ideal: 1920 },
         height: { ideal: 1080 },
         aspectRatio: 16 / 9,
       },
       audio: false,
     });
+
+    // 古いストリームを止める（再切替対策）
+    if (video.srcObject) {
+      video.srcObject.getTracks().forEach(track => track.stop());
+    }
+
     video.srcObject = stream;
-    video.play();
-    currentFacing = facingMode;
+    await video.play();
   } catch (err) {
-    console.error("カメラ起動に失敗しました:", err);
-    alert("カメラ切替に失敗しました");
+    alert("カメラへのアクセスが拒否されました");
+    console.error(err);
   }
 }
 
-document.getElementById("toggleCamera").addEventListener("click", () => {
-  const newFacing = currentFacing === "environment" ? "user" : "environment";
-  startCamera(newFacing);
+// カメラ切替ボタンイベント
+document.getElementById("switchCamera").addEventListener("click", async () => {
+  useFrontCamera = !useFrontCamera;
+  await startCamera();
 });
-
-// 初期カメラ起動
-startCamera();
