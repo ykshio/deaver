@@ -4,6 +4,7 @@ body, html {
   overflow: hidden;
   font-family: sans-serif;
   height: 100%;
+  overflow: hidden; 
 }
 
 #container {
@@ -132,4 +133,40 @@ button#capture img {
   bottom: 120px;
   left: 16px;
   transform: none;
+}
+
+
+#menuBar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+}
+
+#menuBar button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+#menuBar button img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
+}
+
+.label-bottom-right,
+.label-bottom-left {
+  top: auto;
 }
