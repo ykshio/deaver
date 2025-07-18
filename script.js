@@ -3,8 +3,8 @@ const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
 const label = document.getElementById("characterLabel");
 
-const STANDARD_WIDTH = 3024;
-const STANDARD_HEIGHT = 4032;
+const STANDARD_WIDTH = 1080;
+const STANDARD_HEIGHT = 1920;
 
 // カメラ起動（できるだけ高解像度をリクエスト）
 navigator.mediaDevices
