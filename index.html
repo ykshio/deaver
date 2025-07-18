@@ -20,7 +20,12 @@
 
     <!-- 下部メニューバー -->
     <div id="menuBar">
-        <div class="left"></div>
+        <div class="left">
+            <button id="openModal" aria-label="使い方">
+                <img src="images/circle-info-solid.svg" alt="" />
+                <span>使い方</span>
+            </button>
+        </div>
         <div class="center">
             <button id="capture" aria-label="撮影">
                 <img src="images/camera.svg" alt="" />
@@ -54,8 +59,14 @@
         window.addEventListener("load", () => {
             const modal = document.getElementById("modal");
             const closeBtn = document.getElementById("closeModal");
+            const openBtn = document.getElementById("openModal");
+
             closeBtn.addEventListener("click", () => {
                 modal.style.display = "none";
+            });
+
+            openBtn.addEventListener("click", () => {
+                modal.style.display = "flex";
             });
 
             // Twitter投稿処理
@@ -66,6 +77,7 @@
             });
         });
     </script>
+
 </body>
 
 </html>
