@@ -168,3 +168,38 @@ if ('serviceWorker' in navigator) {
     .then(reg => console.log("SW registered", reg))
     .catch(console.error);
 }
+
+// カメラ切替機能
+let currentFacing = "environment";
+
+async function startCamera(facingMode = "environment") {
+  if (video.srcObject) {
+    video.srcObject.getTracks().forEach((track) => track.stop());
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { exact: facingMode },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        aspectRatio: 16 / 9,
+      },
+      audio: false,
+    });
+    video.srcObject = stream;
+    video.play();
+    currentFacing = facingMode;
+  } catch (err) {
+    console.error("カメラ起動に失敗しました:", err);
+    alert("カメラ切替に失敗しました");
+  }
+}
+
+document.getElementById("toggleCamera").addEventListener("click", () => {
+  const newFacing = currentFacing === "environment" ? "user" : "environment";
+  startCamera(newFacing);
+});
+
+// 初期カメラ起動
+startCamera();

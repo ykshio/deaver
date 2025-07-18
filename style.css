@@ -177,9 +177,12 @@ button#capture {
   padding: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 
-  display: flex;             /* 追加 */
-  align-items: center;       /* 追加：縦中央寄せ */
-  justify-content: center;   /* 追加：横中央寄せ */
+  display: flex;
+  /* 追加 */
+  align-items: center;
+  /* 追加：縦中央寄せ */
+  justify-content: center;
+  /* 追加：横中央寄せ */
 }
 
 
@@ -190,7 +193,8 @@ button#capture img {
   object-fit: contain;
   pointer-events: none;
 
-  display: block;   /* 追加：画像下の隙間をなくす */
+  display: block;
+  /* 追加：画像下の隙間をなくす */
   margin: 0;
 }
 
@@ -223,16 +227,32 @@ button#capture img {
 
 /* ふわふわ上下アニメーション */
 @keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 
 /* 点滅テキスト */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
+
 #loading {
   opacity: 1;
   transition: opacity 0.5s ease;
@@ -241,4 +261,31 @@ button#capture img {
 #loading.hide {
   opacity: 0;
   pointer-events: none;
+}
+
+.share-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#shareMenu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+#shareMenu.active {
+  display: flex;
 }

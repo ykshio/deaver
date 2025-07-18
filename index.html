@@ -71,10 +71,25 @@
             </button>
         </div>
         <div class="right">
-            <button id="tweet" aria-label="Xに投稿">
-                <img src="images/x-twitter-brands-2.svg" alt="" />
-                投稿
+            <button id="tweet" aria-label="カメラ切替">
+                <img src="images/rotate-solid.svg" alt="" />
             </button>
+        </div>
+    </div>
+    <!-- 右上共有ボタン -->
+    <div id="shareMenuButton" class="share-button">
+        <img src="images/arrow-up-from-bracket-solid.svg" alt="共有" />
+    </div>
+
+    <!-- モーダル式共有メニュー -->
+    <div id="shareMenu" class="modal">
+        <div class="modal-content">
+            <h2>共有</h2>
+            <ul>
+                <li><button id="shareTwitter">X（Twitter）で投稿</button></li>
+                <li><button id="shareInstagram">Instagramで開く</button></li>
+            </ul>
+            <button id="closeShareMenu">閉じる</button>
         </div>
     </div>
 
@@ -134,13 +149,32 @@
                 modal.style.display = "flex";
             });
 
-            // Tweet投稿処理
-            document.getElementById("tweet").addEventListener("click", () => {
+            const shareBtn = document.getElementById("shareMenuButton");
+            const shareMenu = document.getElementById("shareMenu");
+            const closeShare = document.getElementById("closeShareMenu");
+
+            shareBtn.addEventListener("click", () => {
+                shareMenu.classList.add("active");
+            });
+
+            closeShare.addEventListener("click", () => {
+                shareMenu.classList.remove("active");
+            });
+
+            // Twitterで共有
+            document.getElementById("shareTwitter").addEventListener("click", () => {
                 const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
                 const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                 window.open(url, "_blank");
+                shareMenu.classList.remove("active");
             });
 
+            // Instagram（画像は保存済みとして、Instagramは手動起動）
+            document.getElementById("shareInstagram").addEventListener("click", () => {
+                alert("画像を保存後、Instagramアプリから手動で投稿してください。");
+                shareMenu.classList.remove("active");
+            });
+            
             // 最低表示時間を確保してからローディング非表示
             const elapsed = performance.now() - start;
             const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
