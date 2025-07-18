@@ -176,7 +176,12 @@ button#capture {
   background-color: white;
   padding: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+  display: flex;             /* 追加 */
+  align-items: center;       /* 追加：縦中央寄せ */
+  justify-content: center;   /* 追加：横中央寄せ */
 }
+
 
 /* キャプチャーボタン内画像 */
 button#capture img {
@@ -184,4 +189,7 @@ button#capture img {
   height: 40px;
   object-fit: contain;
   pointer-events: none;
+
+  display: block;   /* 追加：画像下の隙間をなくす */
+  margin: 0;
 }
