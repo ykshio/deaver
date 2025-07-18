@@ -44,6 +44,7 @@
                 <li>ピンチでキャラクターの大きさを変更</li>
                 <li>キャラクターをタップして画像を切り替え</li>
                 <li>カメラボタンを押して写真を撮影</li>
+                <li>Xボタンを押して投稿！</li>
             </ul>
             <button id="closeModal">閉じる</button>
         </div>
@@ -60,7 +61,7 @@
 
             // Twitter投稿処理
             document.getElementById("tweet").addEventListener("click", () => {
-                const text = "ディーバーくんと撮影したよ📸 #ディーバーくん";
+                const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
                 const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
                 window.open(url, "_blank");
             });
