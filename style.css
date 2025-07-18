@@ -233,3 +233,12 @@ button#capture img {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+#loading {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#loading.hide {
+  opacity: 0;
+  pointer-events: none;
+}

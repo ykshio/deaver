@@ -6,7 +6,7 @@ const label = document.getElementById("characterLabel");
 const STANDARD_WIDTH = 1080;
 const STANDARD_HEIGHT = 1920;
 
-// カメラ起動（環境カメラ・広角優先・16:9アスペクト比希望）
+// カメラ起動
 navigator.mediaDevices
   .getUserMedia({
     video: {
@@ -26,48 +26,37 @@ navigator.mediaDevices
     console.error(err);
   });
 
-// タッチ操作でキャラクター移動＆ピンチズーム
-let scale = 1,
-  lastScale = 1;
-let posX = window.innerWidth / 2,
-  posY = window.innerHeight / 2;
-let startX = 0,
-  startY = 0;
+// キャラクターのタッチ操作
+let scale = 1, lastScale = 1;
+let posX = window.innerWidth / 2, posY = window.innerHeight / 2;
+let startX = 0, startY = 0;
 
-character.addEventListener(
-  "touchstart",
-  (e) => {
-    if (e.touches.length === 1) {
-      startX = e.touches[0].clientX - posX;
-      startY = e.touches[0].clientY - posY;
-    } else if (e.touches.length === 2) {
-      lastScale = scale;
-    }
-  },
-  false
-);
+character.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 1) {
+    startX = e.touches[0].clientX - posX;
+    startY = e.touches[0].clientY - posY;
+  } else if (e.touches.length === 2) {
+    lastScale = scale;
+  }
+}, false);
 
-character.addEventListener(
-  "touchmove",
-  (e) => {
-    e.preventDefault();
-    if (e.touches.length === 1) {
-      posX = e.touches[0].clientX - startX;
-      posY = e.touches[0].clientY - startY;
-    } else if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      scale = lastScale * (dist / 200);
-    }
-    character.style.left = `${posX}px`;
-    character.style.top = `${posY}px`;
-    character.style.transform = `translate(-50%, -50%) scale(${scale})`;
-  },
-  { passive: false }
-);
+character.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    posX = e.touches[0].clientX - startX;
+    posY = e.touches[0].clientY - startY;
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    scale = lastScale * (dist / 200);
+  }
+  character.style.left = `${posX}px`;
+  character.style.top = `${posY}px`;
+  character.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}, { passive: false });
 
-// キャラクター画像切り替え用
+// キャラクター画像切り替え
 const characterImages = [
   "images/deaver_default.png",
   "images/deaver_front.png",
@@ -78,13 +67,8 @@ let currentIndex = 0;
 character.src = characterImages[currentIndex];
 
 let touchMoved = false;
-
-character.addEventListener("touchstart", () => {
-  touchMoved = false;
-});
-character.addEventListener("touchmove", () => {
-  touchMoved = true;
-});
+character.addEventListener("touchstart", () => { touchMoved = false; });
+character.addEventListener("touchmove", () => { touchMoved = true; });
 character.addEventListener("touchend", () => {
   if (!touchMoved) {
     currentIndex = (currentIndex + 1) % characterImages.length;
@@ -92,14 +76,14 @@ character.addEventListener("touchend", () => {
   }
 });
 
-// ラベル位置切り替え（四隅）
+// ラベル位置切り替え
 const labelPositions = [
   "label-top-left",
   "label-top-right",
   "label-bottom-right",
   "label-bottom-left",
 ];
-let labelIndex = 3; // 初期位置: 左下
+let labelIndex = 3;
 label.classList.add(labelPositions[labelIndex]);
 
 label.addEventListener("click", () => {
@@ -108,7 +92,7 @@ label.addEventListener("click", () => {
   label.classList.add(labelPositions[labelIndex]);
 });
 
-// 撮影＋画像保存＋クリップボードへ保存
+// 撮影＆保存処理
 document.getElementById("capture").addEventListener("click", async () => {
   canvas.width = STANDARD_WIDTH;
   canvas.height = STANDARD_HEIGHT;
@@ -118,7 +102,6 @@ document.getElementById("capture").addEventListener("click", async () => {
   const canvasAspect = STANDARD_WIDTH / STANDARD_HEIGHT;
 
   let drawWidth, drawHeight, offsetX, offsetY;
-
   if (videoAspect > canvasAspect) {
     drawHeight = STANDARD_HEIGHT;
     drawWidth = video.videoWidth * (STANDARD_HEIGHT / video.videoHeight);
@@ -161,14 +144,19 @@ document.getElementById("capture").addEventListener("click", async () => {
     labelImg.onload = async () => {
       ctx.drawImage(labelImg, labelX, labelY, labelW, labelH);
 
-      // 画像ダウンロード
-      const dataUrl = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.download = "photo.png";
-      link.href = dataUrl;
-      link.click();
+      // Blobを使ってダウンロード処理（data: URLを使わない！）
+      canvas.toBlob((blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = "photo.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      }, "image/png");
 
-      // クリップボード保存（async/awaitで安定）
+      // クリップボード保存
       if (navigator.clipboard && window.ClipboardItem) {
         try {
           const blob = await new Promise((resolve) =>
@@ -191,6 +179,7 @@ document.getElementById("capture").addEventListener("click", async () => {
   };
 });
 
+// PWA: Service Worker登録
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js').then(reg => {
     console.log("SW registered:", reg);
