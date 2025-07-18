@@ -102,6 +102,7 @@ document.getElementById("capture").addEventListener("click", async () => {
   const canvasAspect = STANDARD_WIDTH / STANDARD_HEIGHT;
 
   let drawWidth, drawHeight, offsetX, offsetY;
+
   if (videoAspect > canvasAspect) {
     drawHeight = STANDARD_HEIGHT;
     drawWidth = video.videoWidth * (STANDARD_HEIGHT / video.videoHeight);
@@ -144,40 +145,37 @@ document.getElementById("capture").addEventListener("click", async () => {
     labelImg.onload = async () => {
       ctx.drawImage(labelImg, labelX, labelY, labelW, labelH);
 
-      // Blobを使ってダウンロード処理（data: URLを使わない！）
-      canvas.toBlob((blob) => {
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = "photo.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl);
+      // Blobで安全にダウンロード
+      canvas.toBlob(async (blob) => {
+        if (blob) {
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = "photo.png";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(blobUrl);
+
+          // クリップボード保存（あれば）
+          if (navigator.clipboard && window.ClipboardItem) {
+            try {
+              const item = new ClipboardItem({ "image/png": blob });
+              await navigator.clipboard.write([item]);
+              console.log("画像をクリップボードに保存しました");
+            } catch (err) {
+              console.warn("クリップボード保存に失敗:", err);
+            }
+          }
+        }
       }, "image/png");
 
-      // クリップボード保存
-      if (navigator.clipboard && window.ClipboardItem) {
-        try {
-          const blob = await new Promise((resolve) =>
-            canvas.toBlob(resolve, "image/png")
-          );
-          if (blob) {
-            const item = new ClipboardItem({ "image/png": blob });
-            await navigator.clipboard.write([item]);
-            console.log("画像をクリップボードに保存しました");
-          } else {
-            console.warn("Blobの取得に失敗しました");
-          }
-        } catch (err) {
-          console.warn("クリップボード保存に失敗しました:", err);
-        }
-      } else {
-        console.warn("クリップボードAPIに対応していません");
-      }
+      // PWAではカメラ再起動（保険）
+      await restartCamera();
     };
   };
 });
+
 
 // PWA: Service Worker登録
 if ('serviceWorker' in navigator) {
