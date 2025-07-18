@@ -22,7 +22,6 @@ navigator.mediaDevices
     video.play();
   })
   .catch((err) => {
-    // fallback: facingModeをidealに変更して再試行してもよい（未実装）
     alert("カメラへのアクセスが拒否されました");
     console.error(err);
   });
@@ -110,18 +109,16 @@ label.addEventListener("click", () => {
 });
 
 // 撮影＋画像保存＋クリップボードへ保存
-document.getElementById("capture").addEventListener("click", () => {
+document.getElementById("capture").addEventListener("click", async () => {
   canvas.width = STANDARD_WIDTH;
   canvas.height = STANDARD_HEIGHT;
   const ctx = canvas.getContext("2d");
 
-  // 動画のアスペクト比・キャンバスのアスペクト比を取得
   const videoAspect = video.videoWidth / video.videoHeight;
   const canvasAspect = STANDARD_WIDTH / STANDARD_HEIGHT;
 
   let drawWidth, drawHeight, offsetX, offsetY;
 
-  // canvasに縦横比を合わせてvideoを描画（黒背景で余白部分を埋める）
   if (videoAspect > canvasAspect) {
     drawHeight = STANDARD_HEIGHT;
     drawWidth = video.videoWidth * (STANDARD_HEIGHT / video.videoHeight);
@@ -142,7 +139,6 @@ document.getElementById("capture").addEventListener("click", () => {
   const scaleX = STANDARD_WIDTH / videoRect.width;
   const scaleY = STANDARD_HEIGHT / videoRect.height;
 
-  // キャラクターのcanvas上での座標・サイズ
   const charRect = character.getBoundingClientRect();
   const charX = (charRect.left - videoRect.left) * scaleX;
   const charY = (charRect.top - videoRect.top) * scaleY;
@@ -154,7 +150,6 @@ document.getElementById("capture").addEventListener("click", () => {
   img.onload = () => {
     ctx.drawImage(img, charX, charY, charWidth, charHeight);
 
-    // ラベルも同様に描画
     const labelRect = label.getBoundingClientRect();
     const labelX = (labelRect.left - videoRect.left) * scaleX;
     const labelY = (labelRect.top - videoRect.top) * scaleY;
@@ -163,31 +158,32 @@ document.getElementById("capture").addEventListener("click", () => {
 
     const labelImg = new Image();
     labelImg.src = label.src;
-    labelImg.onload = () => {
+    labelImg.onload = async () => {
       ctx.drawImage(labelImg, labelX, labelY, labelW, labelH);
 
+      // 画像ダウンロード
       const dataUrl = canvas.toDataURL("image/png");
-
-      // ダウンロード処理
       const link = document.createElement("a");
       link.download = "photo.png";
       link.href = dataUrl;
       link.click();
 
-      // クリップボードへ保存（対応ブラウザのみ）
+      // クリップボード保存（async/awaitで安定）
       if (navigator.clipboard && window.ClipboardItem) {
-        fetch(dataUrl)
-          .then((res) => res.blob())
-          .then((blob) => {
+        try {
+          const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/png")
+          );
+          if (blob) {
             const item = new ClipboardItem({ "image/png": blob });
-            return navigator.clipboard.write([item]);
-          })
-          .then(() => {
+            await navigator.clipboard.write([item]);
             console.log("画像をクリップボードに保存しました");
-          })
-          .catch((err) => {
-            console.warn("クリップボード保存に失敗しました:", err);
-          });
+          } else {
+            console.warn("Blobの取得に失敗しました");
+          }
+        } catch (err) {
+          console.warn("クリップボード保存に失敗しました:", err);
+        }
       } else {
         console.warn("クリップボードAPIに対応していません");
       }

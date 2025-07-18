@@ -12,7 +12,7 @@ html {
   position: relative;
   width: 100vw;
   height: 100dvh;
-  /* 修正: モバイルブラウザの表示領域に対応 */
+  /* モバイルブラウザ対応 */
   background: black;
 }
 
@@ -32,32 +32,6 @@ video#camera {
   left: 50%;
   transform: translate(-50%, -50%);
   touch-action: none;
-}
-
-button#capture {
-  position: absolute;
-  bottom: calc(70px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background-color: white;
-  border: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-button#capture img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  pointer-events: none;
 }
 
 .modal {
@@ -137,20 +111,45 @@ button#capture img {
   transform: none;
 }
 
-
+/* メニューバー全体 */
 #menuBar {
   position: fixed;
   bottom: 0;
   width: 100%;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  /* 左中右に分割 */
   align-items: center;
-  padding: 10px 0;
+  padding: 10px 20px;
   z-index: 10000;
   backdrop-filter: blur(10px);
+  box-sizing: border-box;
 }
 
+/* メニューバーの3分割コンテナ */
+#menuBar .left,
+#menuBar .center,
+#menuBar .right {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+/* 中央は中央寄せ */
+#menuBar .center {
+  justify-content: center;
+  flex: 0;
+  width: 72px;
+  /* カメラボタンのサイズに合わせる */
+}
+
+/* 右は右寄せ */
+#menuBar .right {
+  justify-content: flex-end;
+}
+
+/* ボタン共通スタイル */
 #menuBar button {
   background: none;
   border: none;
@@ -162,13 +161,27 @@ button#capture img {
   cursor: pointer;
 }
 
+/* ボタン内の画像 */
 #menuBar button img {
   width: 28px;
   height: 28px;
   margin-bottom: 4px;
 }
 
-.label-bottom-right,
-.label-bottom-left {
-  top: auto;
+/* キャプチャーボタンのスタイル（丸ボタン） */
+button#capture {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: white;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* キャプチャーボタン内画像 */
+button#capture img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  pointer-events: none;
 }
