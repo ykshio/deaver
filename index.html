@@ -2,65 +2,65 @@
 <html lang="ja">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ディーバーくんと撮影</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ディーバーくんと撮影</title>
 
-  <link rel="icon" href="images/icon.png" type="image/png" />
-  <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="images/icon.png" type="image/png" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div id="container">
-    <video id="camera" autoplay playsinline></video>
-    <img id="character" src="images/deaver_default.png" alt="キャラクター" draggable="false" />
-    <img id="characterLabel" src="images/deaver_label.png" alt="キャラクター名" draggable="false" />
-    <canvas id="canvas" style="display: none;"></canvas>
-  </div>
-
-  <!-- 下部メニューバー -->
-  <div id="menuBar">
-    <button id="capture" aria-label="撮影">
-      <img src="images/camera.svg" alt="" />
-      撮影
-    </button>
-    <button id="tweet" aria-label="Twitterに投稿">
-      <img src="images/x-twitter-brands.svg" alt="" />
-      投稿
-    </button>
-  </div>
-
-  <!-- 操作説明モーダル -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <h2>操作方法</h2>
-      <ul>
-        <li>キャラクターをドラッグして移動</li>
-        <li>ピンチでキャラクターの大きさを変更</li>
-        <li>キャラクターをタップして画像を切り替え</li>
-        <li>カメラボタンを押して写真を撮影</li>
-      </ul>
-      <button id="closeModal">閉じる</button>
+    <div id="container">
+        <video id="camera" autoplay playsinline></video>
+        <img id="character" src="images/deaver_default.png" alt="キャラクター" draggable="false" />
+        <img id="characterLabel" src="images/deaver_label.png" alt="キャラクター名" draggable="false" />
+        <canvas id="canvas" style="display: none;"></canvas>
     </div>
-  </div>
 
-  <script src="script.js"></script>
-  <script>
-    window.addEventListener("load", () => {
-      const modal = document.getElementById("modal");
-      const closeBtn = document.getElementById("closeModal");
-      closeBtn.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
+    <!-- 下部メニューバー -->
+    <div id="menuBar">
+        <button id="capture" aria-label="撮影">
+            <img src="images/camera.svg" alt="" />
+            撮影
+        </button>
+        <button id="tweet" aria-label="Twitterに投稿">
+            <img src="images/x-twitter-brands.svg" alt="" />
+            投稿
+        </button>
+    </div>
 
-      // Twitter投稿処理
-      document.getElementById("tweet").addEventListener("click", () => {
-        const text = "ディーバーくんと撮影したよ📸 #ディーバーくん";
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-        window.open(url, "_blank");
-      });
-    });
-  </script>
+    <!-- 操作説明モーダル -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>操作方法</h2>
+            <ul>
+                <li>キャラクターをドラッグして移動</li>
+                <li>ピンチでキャラクターの大きさを変更</li>
+                <li>キャラクターをタップして画像を切り替え</li>
+                <li>カメラボタンを押して写真を撮影</li>
+            </ul>
+            <button id="closeModal">閉じる</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        window.addEventListener("load", () => {
+            const modal = document.getElementById("modal");
+            const closeBtn = document.getElementById("closeModal");
+            closeBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+
+            // Twitter投稿処理
+            document.getElementById("tweet").addEventListener("click", () => {
+                const text = "ディーバーくんと撮影したよ📸 #ディーバーくん";
+                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                window.open(url, "_blank");
+            });
+        });
+    </script>
 </body>
 
 </html>
