@@ -101,15 +101,35 @@ button#capture img {
 
 #characterLabel {
   position: fixed;
-  bottom: 120px; /* カメラボタンより少し上 */
-  left: 50%;
-  transform: translateX(-50%);
   width: 120px;
   z-index: 5;
-  pointer-events: none;
+  pointer-events: auto;
+  transition: all 0.3s ease;
 }
-#characterLabel img {
-  width: 100%;
-  height: auto;
-  display: block;
+
+/* 四隅の位置 */
+.label-top-left {
+  top: 16px;
+  left: 16px;
+  transform: none;
+}
+
+.label-top-right {
+  top: 16px;
+  right: 16px;
+  left: auto;
+  transform: none;
+}
+
+.label-bottom-right {
+  bottom: 120px;
+  right: 16px;
+  left: auto;
+  transform: none;
+}
+
+.label-bottom-left {
+  bottom: 120px;
+  left: 16px;
+  transform: none;
 }

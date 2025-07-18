@@ -69,27 +69,18 @@ character.addEventListener(
 
 // 写真撮影
 document.getElementById("capture").addEventListener("click", () => {
-  // CanvasはiPhone標準サイズ固定
   canvas.width = STANDARD_WIDTH;
   canvas.height = STANDARD_HEIGHT;
 
   const ctx = canvas.getContext("2d");
-
-  // videoの画面上の表示サイズを取得（CSSサイズ）
   const videoRect = video.getBoundingClientRect();
 
-  // videoの実解像度はvideo.videoWidth/Height（取得できない場合もあり）
-  // ここではcanvas固定サイズに引き伸ばすため、スケールはcanvasサイズ / videoRectサイズで計算
   const scaleX = STANDARD_WIDTH / videoRect.width;
   const scaleY = STANDARD_HEIGHT / videoRect.height;
 
-  // video映像をcanvas全体に引き伸ばし描画
   ctx.drawImage(video, 0, 0, STANDARD_WIDTH, STANDARD_HEIGHT);
 
-  // キャラクターの画面上での位置とサイズ
   const charRect = character.getBoundingClientRect();
-
-  // キャラクターの座標・サイズをcanvasのスケールに合わせて計算
   const charX = (charRect.left - videoRect.left) * scaleX;
   const charY = (charRect.top - videoRect.top) * scaleY;
   const charWidth = charRect.width * scaleX;
@@ -100,7 +91,6 @@ document.getElementById("capture").addEventListener("click", () => {
   img.onload = () => {
     ctx.drawImage(img, charX, charY, charWidth, charHeight);
 
-    // ラベル画像もcanvasに描画
     const labelRect = label.getBoundingClientRect();
     const labelX = (labelRect.left - videoRect.left) * scaleX;
     const labelY = (labelRect.top - videoRect.top) * scaleY;
@@ -112,7 +102,6 @@ document.getElementById("capture").addEventListener("click", () => {
     labelImg.onload = () => {
       ctx.drawImage(labelImg, labelX, labelY, labelW, labelH);
 
-      // ダウンロード
       const link = document.createElement("a");
       link.download = "photo.png";
       link.href = canvas.toDataURL("image/png");
@@ -130,10 +119,8 @@ const characterImages = [
 ];
 let currentIndex = 0;
 
-// 初期画像を設定
 character.src = characterImages[currentIndex];
 
-// タップで画像を切り替え（タッチ操作と競合しないよう工夫）
 let touchMoved = false;
 
 character.addEventListener("touchstart", () => {
@@ -149,4 +136,21 @@ character.addEventListener("touchend", () => {
     currentIndex = (currentIndex + 1) % characterImages.length;
     character.src = characterImages[currentIndex];
   }
+});
+
+// ラベル位置切り替え（四隅）
+const labelPositions = [
+  "label-top-left",
+  "label-top-right",
+  "label-bottom-right",
+  "label-bottom-left",
+];
+let labelIndex = 3; // 初期: 左下
+
+label.classList.add(labelPositions[labelIndex]);
+
+label.addEventListener("click", () => {
+  label.classList.remove(labelPositions[labelIndex]);
+  labelIndex = (labelIndex + 1) % labelPositions.length;
+  label.classList.add(labelPositions[labelIndex]);
 });
