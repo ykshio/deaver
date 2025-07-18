@@ -1,18 +1,15 @@
-body,
-html {
+html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
   font-family: sans-serif;
   height: 100%;
-  overflow: hidden;
 }
 
 #container {
   position: relative;
   width: 100vw;
   height: 100dvh;
-  /* モバイルブラウザ対応 */
   background: black;
 }
 
@@ -32,6 +29,180 @@ video#camera {
   left: 50%;
   transform: translate(-50%, -50%);
   touch-action: none;
+}
+
+#characterLabel {
+  position: fixed;
+  width: 120px;
+  z-index: 5;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+.label-top-left {
+  top: 16px;
+  left: 16px;
+}
+
+.label-top-right {
+  top: 16px;
+  right: 16px;
+}
+
+.label-bottom-right {
+  bottom: 120px;
+  right: 16px;
+}
+
+.label-bottom-left {
+  bottom: 120px;
+  left: 16px;
+}
+
+#menuBar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+}
+
+/* 左・右 */
+#menuBar .left,
+#menuBar .right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+#menuBar .left {
+  justify-content: flex-start;
+}
+
+#menuBar .right {
+  justify-content: flex-end;
+}
+
+/* 中央 */
+#menuBar .center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ボタン共通 */
+#menuBar button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+#menuBar button img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
+}
+
+/* 撮影ボタン */
+button#capture {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: white;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button#capture img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  pointer-events: none;
+  display: block;
+  margin: 0;
+}
+
+#tweet.topRight {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 999;
+}
+
+#tweet.topRight img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+#loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#loading.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-image {
+  width: 100px;
+  animation: float 2s ease-in-out infinite;
+}
+
+.loading-text {
+  margin-top: 16px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .modal {
@@ -55,17 +226,11 @@ video#camera {
   box-sizing: border-box;
   text-align: center;
 }
-
-.modal-content h2 {
-  margin-top: 0;
-}
-
 .modal-content ul {
   text-align: left;
   margin-bottom: 20px;
   padding-left: 1.2em;
 }
-
 .modal-content button {
   padding: 10px 24px;
   font-size: 16px;
@@ -74,254 +239,4 @@ video#camera {
   color: white;
   border-radius: 6px;
   cursor: pointer;
-}
-
-#characterLabel {
-  position: fixed;
-  width: 120px;
-  z-index: 5;
-  pointer-events: auto;
-  transition: all 0.3s ease;
-}
-
-/* 四隅の位置 */
-.label-top-left {
-  top: 16px;
-  left: 16px;
-  transform: none;
-}
-
-.label-top-right {
-  top: 16px;
-  right: 16px;
-  left: auto;
-  transform: none;
-}
-
-.label-bottom-right {
-  bottom: 120px;
-  right: 16px;
-  left: auto;
-  transform: none;
-}
-
-.label-bottom-left {
-  bottom: 120px;
-  left: 16px;
-  transform: none;
-}
-
-/* メニューバー全体 */
-#menuBar {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: space-between;
-  /* 左中右に分割 */
-  align-items: center;
-  padding: 10px 20px;
-  z-index: 10000;
-  backdrop-filter: blur(10px);
-  box-sizing: border-box;
-}
-
-/* メニューバーの3分割コンテナ */
-#menuBar .left,
-#menuBar .center,
-#menuBar .right {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-/* 中央は中央寄せ */
-#menuBar .center {
-  justify-content: center;
-  flex: 0;
-  width: 72px;
-  /* カメラボタンのサイズに合わせる */
-}
-
-/* 右は右寄せ */
-#menuBar .right {
-  justify-content: flex-end;
-}
-
-/* ボタン共通スタイル */
-#menuBar button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-}
-
-/* ボタン内の画像 */
-#menuBar button img {
-  width: 28px;
-  height: 28px;
-  margin-bottom: 4px;
-}
-
-/* キャプチャーボタンのスタイル（丸ボタン） */
-button#capture {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background-color: white;
-  padding: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-
-  display: flex;
-  /* 追加 */
-  align-items: center;
-  /* 追加：縦中央寄せ */
-  justify-content: center;
-  /* 追加：横中央寄せ */
-}
-
-
-/* キャプチャーボタン内画像 */
-button#capture img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  pointer-events: none;
-
-  display: block;
-  /* 追加：画像下の隙間をなくす */
-  margin: 0;
-}
-
-#loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100dvh;
-  background-color: black;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100000;
-}
-
-.loading-image {
-  width: 100px;
-  animation: float 2s ease-in-out infinite;
-}
-
-.loading-text {
-  margin-top: 16px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  animation: blink 1.5s infinite;
-}
-
-/* ふわふわ上下アニメーション */
-@keyframes float {
-  0% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
-/* 点滅テキスト */
-@keyframes blink {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.4;
-  }
-}
-
-#loading {
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
-
-#loading.hide {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.share-button {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#shareMenu {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-}
-
-#shareMenu.active {
-  display: flex;
-}
-
-/* メニューバー右下ボタン配置用 */
-#menuBar .right {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-}
-
-#menuBar .right button {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-}
-
-/* 投稿ボタンを画面右上に固定表示 */
-#tweet.topRight {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  background-color: rgba(0, 0, 0, 0.6); /* 背景追加で視認性アップ */
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: white;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  z-index: 999;
-}
-#tweet.topRight img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
 }
