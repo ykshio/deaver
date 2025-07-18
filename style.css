@@ -193,3 +193,27 @@ button#capture img {
   display: block;   /* 追加：画像下の隙間をなくす */
   margin: 0;
 }
+
+#loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  color: white;
+  font-size: 24px;
+}
+
+.loader {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

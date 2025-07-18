@@ -8,9 +8,22 @@
 
     <link rel="icon" href="images/icon.png" type="image/png" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- iOS向け -->
+    <link rel="apple-touch-icon" href="images/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
 </head>
 
 <body>
+    <!-- ローディング画面 -->
+    <div id="loading">
+        <div class="loader">Loading...</div>
+    </div>
+
     <div id="container">
         <video id="camera" autoplay playsinline></video>
         <img id="character" src="images/deaver_default.png" alt="キャラクター" draggable="false" />
@@ -76,6 +89,10 @@
                 window.open(url, "_blank");
             });
         });
+        window.addEventListener("load", () => {
+            document.getElementById("loading").style.display = "none";
+        });
+
     </script>
 
 </body>
