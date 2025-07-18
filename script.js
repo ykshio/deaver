@@ -1,58 +1,71 @@
 const video = document.getElementById("camera");
 const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
+const label = document.getElementById("characterLabel");
 
 const STANDARD_WIDTH = 4032;
 const STANDARD_HEIGHT = 3024;
 
 // カメラ起動（できるだけ高解像度をリクエスト）
-navigator.mediaDevices.getUserMedia({
-  video: {
-    facingMode: "environment",
-    width: { ideal: STANDARD_WIDTH },
-    height: { ideal: STANDARD_HEIGHT }
-  },
-  audio: false
-})
-  .then(stream => {
+navigator.mediaDevices
+  .getUserMedia({
+    video: {
+      facingMode: "environment",
+      width: { ideal: STANDARD_WIDTH },
+      height: { ideal: STANDARD_HEIGHT },
+    },
+    audio: false,
+  })
+  .then((stream) => {
     video.srcObject = stream;
     video.play();
   })
-  .catch(err => {
+  .catch((err) => {
     alert("カメラへのアクセスが拒否されました");
     console.error(err);
   });
 
 // タッチ操作で移動＆ピンチズーム
-let scale = 1, lastScale = 1;
-let posX = window.innerWidth / 2, posY = window.innerHeight / 2;
-let startX = 0, startY = 0;
+let scale = 1,
+  lastScale = 1;
+let posX = window.innerWidth / 2,
+  posY = window.innerHeight / 2;
+let startX = 0,
+  startY = 0;
 
-character.addEventListener("touchstart", e => {
-  if (e.touches.length === 1) {
-    startX = e.touches[0].clientX - posX;
-    startY = e.touches[0].clientY - posY;
-  } else if (e.touches.length === 2) {
-    lastScale = scale;
-  }
-}, false);
+character.addEventListener(
+  "touchstart",
+  (e) => {
+    if (e.touches.length === 1) {
+      startX = e.touches[0].clientX - posX;
+      startY = e.touches[0].clientY - posY;
+    } else if (e.touches.length === 2) {
+      lastScale = scale;
+    }
+  },
+  false
+);
 
-character.addEventListener("touchmove", e => {
-  e.preventDefault();
-  if (e.touches.length === 1) {
-    posX = e.touches[0].clientX - startX;
-    posY = e.touches[0].clientY - startY;
-  } else if (e.touches.length === 2) {
-    let dx = e.touches[0].clientX - e.touches[1].clientX;
-    let dy = e.touches[0].clientY - e.touches[1].clientY;
-    let dist = Math.sqrt(dx * dx + dy * dy);
-    scale = lastScale * (dist / 200);
-  }
+character.addEventListener(
+  "touchmove",
+  (e) => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      posX = e.touches[0].clientX - startX;
+      posY = e.touches[0].clientY - startY;
+    } else if (e.touches.length === 2) {
+      let dx = e.touches[0].clientX - e.touches[1].clientX;
+      let dy = e.touches[0].clientY - e.touches[1].clientY;
+      let dist = Math.sqrt(dx * dx + dy * dy);
+      scale = lastScale * (dist / 200);
+    }
 
-  character.style.left = `${posX}px`;
-  character.style.top = `${posY}px`;
-  character.style.transform = `translate(-50%, -50%) scale(${scale})`;
-}, { passive: false });
+    character.style.left = `${posX}px`;
+    character.style.top = `${posY}px`;
+    character.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  },
+  { passive: false }
+);
 
 // 写真撮影
 document.getElementById("capture").addEventListener("click", () => {
@@ -87,11 +100,24 @@ document.getElementById("capture").addEventListener("click", () => {
   img.onload = () => {
     ctx.drawImage(img, charX, charY, charWidth, charHeight);
 
-    // ダウンロード
-    const link = document.createElement("a");
-    link.download = "photo.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    // ラベル画像もcanvasに描画
+    const labelRect = label.getBoundingClientRect();
+    const labelX = (labelRect.left - videoRect.left) * scaleX;
+    const labelY = (labelRect.top - videoRect.top) * scaleY;
+    const labelW = labelRect.width * scaleX;
+    const labelH = labelRect.height * scaleY;
+
+    const labelImg = new Image();
+    labelImg.src = label.src;
+    labelImg.onload = () => {
+      ctx.drawImage(labelImg, labelX, labelY, labelW, labelH);
+
+      // ダウンロード
+      const link = document.createElement("a");
+      link.download = "photo.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    };
   };
 });
 

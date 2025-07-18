@@ -98,3 +98,18 @@ button#capture img {
   border-radius: 6px;
   cursor: pointer;
 }
+
+#characterLabel {
+  position: fixed;
+  bottom: 120px; /* カメラボタンより少し上 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  z-index: 5;
+  pointer-events: none;
+}
+#characterLabel img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
