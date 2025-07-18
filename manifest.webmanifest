@@ -1,6 +1,6 @@
 {
     "name": "ディーバーくんと撮影",
-    "short_name": "ディーバーくんカメラ",
+    "short_name": "ディーバーカメラ",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#000000",
