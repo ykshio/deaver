@@ -6,13 +6,14 @@ const label = document.getElementById("characterLabel");
 const STANDARD_WIDTH = 1080;
 const STANDARD_HEIGHT = 1920;
 
-// カメラ起動（できるだけ高解像度をリクエスト）
+// カメラ起動（広角カメラ優先 + アスペクト比調整）
 navigator.mediaDevices
   .getUserMedia({
     video: {
-      facingMode: "environment",
-      width: { ideal: STANDARD_WIDTH },
-      height: { ideal: STANDARD_HEIGHT },
+      facingMode: { exact: "environment" },
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+      aspectRatio: 16 / 9,
     },
     audio: false,
   })
@@ -71,14 +72,32 @@ character.addEventListener(
 document.getElementById("capture").addEventListener("click", () => {
   canvas.width = STANDARD_WIDTH;
   canvas.height = STANDARD_HEIGHT;
-
   const ctx = canvas.getContext("2d");
-  const videoRect = video.getBoundingClientRect();
 
+  const videoAspect = video.videoWidth / video.videoHeight;
+  const canvasAspect = STANDARD_WIDTH / STANDARD_HEIGHT;
+
+  let drawWidth, drawHeight, offsetX, offsetY;
+
+  if (videoAspect > canvasAspect) {
+    drawHeight = STANDARD_HEIGHT;
+    drawWidth = video.videoWidth * (STANDARD_HEIGHT / video.videoHeight);
+    offsetX = (STANDARD_WIDTH - drawWidth) / 2;
+    offsetY = 0;
+  } else {
+    drawWidth = STANDARD_WIDTH;
+    drawHeight = video.videoHeight * (STANDARD_WIDTH / video.videoWidth);
+    offsetX = 0;
+    offsetY = (STANDARD_HEIGHT - drawHeight) / 2;
+  }
+
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, STANDARD_WIDTH, STANDARD_HEIGHT);
+  ctx.drawImage(video, offsetX, offsetY, drawWidth, drawHeight);
+
+  const videoRect = video.getBoundingClientRect();
   const scaleX = STANDARD_WIDTH / videoRect.width;
   const scaleY = STANDARD_HEIGHT / videoRect.height;
-
-  ctx.drawImage(video, 0, 0, STANDARD_WIDTH, STANDARD_HEIGHT);
 
   const charRect = character.getBoundingClientRect();
   const charX = (charRect.left - videoRect.left) * scaleX;
@@ -110,7 +129,7 @@ document.getElementById("capture").addEventListener("click", () => {
   };
 });
 
-// キャラクター画像を順番に切り替える
+// キャラクター画像切り替え
 const characterImages = [
   "images/deaver_default.png",
   "images/deaver_front.png",
@@ -118,7 +137,6 @@ const characterImages = [
   "images/deaver_right.png",
 ];
 let currentIndex = 0;
-
 character.src = characterImages[currentIndex];
 
 let touchMoved = false;
@@ -126,11 +144,9 @@ let touchMoved = false;
 character.addEventListener("touchstart", () => {
   touchMoved = false;
 });
-
 character.addEventListener("touchmove", () => {
   touchMoved = true;
 });
-
 character.addEventListener("touchend", () => {
   if (!touchMoved) {
     currentIndex = (currentIndex + 1) % characterImages.length;
@@ -145,7 +161,7 @@ const labelPositions = [
   "label-bottom-right",
   "label-bottom-left",
 ];
-let labelIndex = 3; // 初期: 左下
+let labelIndex = 3;
 
 label.classList.add(labelPositions[labelIndex]);
 
