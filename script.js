@@ -212,25 +212,24 @@ document.getElementById("capture").addEventListener("click", async () => {
         };
 
         document.getElementById("tweetBtn").onclick = async () => {
+          const text =
+            "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+          const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            text
+          )}`;
+
+          // X投稿用の空ウィンドウ（ポップアップブロック対策）
+          const tweetWindow = window.open("", "_blank");
+
           try {
             await navigator.clipboard.write([
               new ClipboardItem({ "image/png": blob }),
             ]);
 
-            const confirmed = confirm(
-              "コピーしました。\n『OK』を押すとXの投稿画面に遷移します。\n画像は貼り付け（ペースト）してください。"
-            );
-
-            if (confirmed) {
-              const text =
-                "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-              const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                text
-              )}`;
-              window.open(url, "_blank");
-            }
+            showTweetModal(tweetWindow, tweetUrl);
           } catch (e) {
             alert("コピーに失敗しました。保存してから投稿してください。");
+            if (tweetWindow) tweetWindow.close();
             console.error(e);
           }
         };
@@ -313,4 +312,32 @@ if ("serviceWorker" in navigator) {
     .register("/service-worker.js")
     .then((reg) => console.log("SW registered", reg))
     .catch((err) => console.warn("SW registration failed", err));
+}
+
+function showTweetModal(tweetWindow, tweetUrl) {
+  const modal = document.createElement("div");
+  modal.className = "custom-modal";
+  modal.innerHTML = `
+    <div class="custom-modal-content">
+      <p>コピーしました。<br>『投稿』を押すとXの投稿画面に遷移します。<br>画像は貼り付け（ペースト）してください。</p>
+      <div style="margin-top: 16px; display: flex; gap: 10px; justify-content: center;">
+        <button class="tweet-cancel">キャンセル</button>
+        <button class="tweet-post">投稿</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector(".tweet-cancel").addEventListener("click", () => {
+    document.body.removeChild(modal);
+    if (tweetWindow) tweetWindow.close();
+  });
+
+  modal.querySelector(".tweet-post").addEventListener("click", () => {
+    if (tweetWindow) {
+      tweetWindow.location.href = tweetUrl;
+    }
+    document.body.removeChild(modal);
+  });
 }
