@@ -311,3 +311,28 @@ video#camera {
   display: block;
   pointer-events: none;
 }
+
+/* 通知モーダル用スタイル（共通モーダル再利用） */
+#notificationModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+#notificationModal.active {
+  display: flex;
+}
+
+#notificationModal .modal-content {
+  background: black;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 80%;
+}

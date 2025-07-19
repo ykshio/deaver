@@ -331,3 +331,16 @@ if ("serviceWorker" in navigator) {
     .then((reg) => console.log("SW registered", reg))
     .catch((err) => console.warn("SW registration failed", err));
 }
+
+function showNotification(message) {
+  const modal = document.getElementById("notificationModal");
+  const messageElem = document.getElementById("notificationMessage");
+  const closeBtn = document.getElementById("notificationCloseBtn");
+
+  messageElem.textContent = message;
+  modal.classList.add("active");
+
+  closeBtn.onclick = () => {
+    modal.classList.remove("active");
+  };
+}
