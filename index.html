@@ -43,6 +43,8 @@
 </head>
 
 <body>
+    <audio id="shutterSound" src="sounds/shutter.mp3" preload="auto"></audio>
+
     <!-- ローディング画面 -->
     <div id="loading">
         <img src="images/deaver_default.png" alt="ローディング" class="loading-image" />
@@ -161,6 +163,17 @@
                 setTimeout(() => loading.style.display = "none", 500); // フェード完了後に非表示
             }, delay);
 
+        });
+
+        // 撮影ボタンにシャッター音を追加
+        document.getElementById("capture").addEventListener("click", () => {
+            const shutterSound = document.getElementById("shutterSound");
+            if (shutterSound) {
+                shutterSound.currentTime = 0;
+                shutterSound.play().catch(err => console.warn("音声再生に失敗:", err));
+            }
+
+            // その後の画像合成処理…
         });
 
 
