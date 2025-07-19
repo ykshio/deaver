@@ -57,31 +57,36 @@
         <canvas id="canvas" style="display: none;"></canvas>
     </div>
 
-    <!-- 下部メニューバー -->
     <div id="menuBar">
-        <div class="left">
+        <div class="menu-slot">
             <button id="openModal" aria-label="使い方">
                 <img src="images/circle-info-solid-2.svg" alt="" />
                 <span>使い方</span>
             </button>
         </div>
-        <div class="center">
+
+        <div class="menu-slot">
+            <button id="tweet" aria-label="Xに投稿">
+                <img src="images/x-twitter-brands-2.svg" alt="" />
+                投稿
+            </button>
+        </div>
+
+        <div class="menu-slot">
             <button id="capture" aria-label="撮影">
                 <img src="images/camera.svg" alt="" />
             </button>
         </div>
-        <div class="right">
+
+        <div class="menu-slot"></div> <!-- 空のスペース -->
+
+        <div class="menu-slot">
             <button id="switchCamera" aria-label="カメラ切替">
                 <img src="images/rotate-solid.svg" alt="カメラ切替" />
             </button>
         </div>
     </div>
 
-    <!-- 投稿ボタンは右上に移動 -->
-    <button id="tweet" class="topRight" aria-label="Xに投稿">
-        <img src="images/x-twitter-brands-2.svg" alt="" />
-        投稿
-    </button>
 
 
     <!-- 操作説明モーダル -->

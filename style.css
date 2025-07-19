@@ -1,9 +1,11 @@
-html, body {
+/* 基本設定 */
+body,
+html {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   font-family: sans-serif;
   height: 100%;
+  overflow: hidden;
 }
 
 #container {
@@ -22,6 +24,7 @@ video#camera {
   left: 0;
 }
 
+/* キャラクター画像 */
 #character {
   position: absolute;
   width: 150px;
@@ -31,6 +34,50 @@ video#camera {
   touch-action: none;
 }
 
+/* モーダル（使い方） */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px 32px;
+  border-radius: 12px;
+  max-width: 90vw;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content ul {
+  text-align: left;
+  margin-bottom: 20px;
+  padding-left: 1.2em;
+}
+
+.modal-content button {
+  padding: 10px 24px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* キャラクターラベル位置選択 */
 #characterLabel {
   position: fixed;
   width: 120px;
@@ -42,63 +89,52 @@ video#camera {
 .label-top-left {
   top: 16px;
   left: 16px;
+  transform: none;
 }
 
 .label-top-right {
   top: 16px;
   right: 16px;
-}
-
-.label-bottom-right {
-  bottom: 120px;
-  right: 16px;
+  transform: none;
 }
 
 .label-bottom-left {
   bottom: 120px;
   left: 16px;
+  transform: none;
 }
 
+.label-bottom-right {
+  bottom: 120px;
+  right: 16px;
+  transform: none;
+}
+
+/* 📸 メニューバー全体（5分割構成） */
 #menuBar {
   position: fixed;
   bottom: 0;
   width: 100%;
+  height: 88px;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 0 10px;
   z-index: 10000;
   backdrop-filter: blur(10px);
   box-sizing: border-box;
 }
 
-/* 左・右 */
-#menuBar .left,
-#menuBar .right {
+/* 各スロット均等配置 */
+#menuBar .menu-slot {
   flex: 1;
   display: flex;
-  align-items: center;
-}
-
-#menuBar .left {
-  justify-content: flex-start;
-}
-
-#menuBar .right {
-  justify-content: flex-end;
-}
-
-/* 中央 */
-#menuBar .center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
-/* ボタン共通 */
+/* ボタン共通スタイル */
 #menuBar button {
   background: none;
   border: none;
@@ -110,14 +146,15 @@ video#camera {
   cursor: pointer;
 }
 
+/* ボタン内の画像 */
 #menuBar button img {
   width: 28px;
   height: 28px;
   margin-bottom: 4px;
 }
 
-/* 撮影ボタン */
-button#capture {
+/* 撮影ボタン（中央） */
+#menuBar button#capture {
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -129,19 +166,16 @@ button#capture {
   justify-content: center;
 }
 
-button#capture img {
+#menuBar button#capture img {
   width: 40px;
   height: 40px;
   object-fit: contain;
   pointer-events: none;
-  display: block;
   margin: 0;
 }
 
-#tweet.topRight {
-  position: fixed;
-  top: 12px;
-  right: 12px;
+/* 投稿ボタン（X/Twitter） */
+#tweet {
   background-color: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 8px;
@@ -151,15 +185,16 @@ button#capture img {
   display: flex;
   align-items: center;
   gap: 4px;
-  z-index: 999;
+  cursor: pointer;
 }
 
-#tweet.topRight img {
+#tweet img {
   width: 24px;
   height: 24px;
   object-fit: contain;
 }
 
+/* ローディング画面 */
 #loading {
   position: fixed;
   top: 0;
@@ -195,48 +230,53 @@ button#capture img {
 }
 
 @keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100dvh;
-  background: rgba(0, 0, 0, 0.7);
+/* 共有メニュー */
+.share-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
 }
 
-.modal-content {
-  background: white;
-  padding: 24px 32px;
-  border-radius: 12px;
-  max-width: 90vw;
-  box-sizing: border-box;
-  text-align: center;
+#shareMenu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
 }
-.modal-content ul {
-  text-align: left;
-  margin-bottom: 20px;
-  padding-left: 1.2em;
-}
-.modal-content button {
-  padding: 10px 24px;
-  font-size: 16px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+
+#shareMenu.active {
+  display: flex;
 }
