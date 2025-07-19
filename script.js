@@ -212,9 +212,6 @@ document.getElementById("capture").addEventListener("click", async () => {
         };
 
         document.getElementById("tweetBtn").onclick = async () => {
-          const text =
-            "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-
           try {
             await navigator.clipboard.write([
               new ClipboardItem({ "image/png": blob }),
@@ -225,10 +222,12 @@ document.getElementById("capture").addEventListener("click", async () => {
             );
 
             if (confirmed) {
-              const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              const text =
+                "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+              const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
                 text
               )}`;
-              window.open(tweetUrl, "_blank");
+              window.open(url, "_blank");
             }
           } catch (e) {
             alert("コピーに失敗しました。保存してから投稿してください。");
