@@ -1,4 +1,4 @@
-// JavaScript 全体
+// 要素取得
 const video = document.getElementById("camera");
 const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
@@ -7,9 +7,9 @@ const menuBar = document.getElementById("menuBar");
 
 const STANDARD_WIDTH = 1080;
 const STANDARD_HEIGHT = 1920;
-
 let useFrontCamera = false;
 
+// シェアメニュー切替
 function toggleShareMenu(show) {
   const shareMenu = document.getElementById("shareMenu");
   if (show) {
@@ -23,6 +23,7 @@ function toggleShareMenu(show) {
   }
 }
 
+// カメラ起動
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -48,6 +49,7 @@ async function startCamera() {
 }
 startCamera();
 
+// キャラクター画像設定
 const characterImages = [
   "images/deaver_default.png",
   "images/deaver_front.png",
@@ -57,6 +59,7 @@ const characterImages = [
 let currentIndex = 0;
 character.src = characterImages[currentIndex];
 
+// タップで切り替え
 let touchMoved = false;
 character.addEventListener("touchstart", () => { touchMoved = false; });
 character.addEventListener("touchmove", () => { touchMoved = true; });
@@ -67,6 +70,7 @@ character.addEventListener("touchend", () => {
   }
 });
 
+// キャラクター移動 & 拡大縮小
 let scale = 1, lastScale = 1;
 let posX = window.innerWidth / 2, posY = window.innerHeight / 2;
 let startX = 0, startY = 0;
@@ -94,6 +98,7 @@ character.addEventListener("touchmove", (e) => {
   character.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }, { passive: false });
 
+// ラベル位置切替
 const labelPositions = [
   "label-top-left",
   "label-top-right",
@@ -109,21 +114,7 @@ label.addEventListener("click", () => {
   );
 });
 
-function showModal(message) {
-  const modal = document.createElement("div");
-  modal.className = "custom-modal";
-  modal.innerHTML = `
-    <div class="custom-modal-content">
-      <p>${message}</p>
-      <button class="close-modal">OK</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.querySelector(".close-modal").addEventListener("click", () => {
-    document.body.removeChild(modal);
-  });
-}
-
+// 撮影処理
 document.getElementById("capture").addEventListener("click", async () => {
   const shutterSound = document.getElementById("shutterSound");
   if (shutterSound) {
@@ -211,18 +202,17 @@ document.getElementById("capture").addEventListener("click", async () => {
 
         document.getElementById("tweetBtn").onclick = async () => {
           const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-
           try {
             await navigator.clipboard.write([
               new ClipboardItem({ "image/png": blob })
             ]);
-            showModal("コピーしました！\nXの投稿画面が開きます。画像はペーストしてください。")
+            showModal("コピーしました！\nXの投稿画面が開きます。画像はペーストしてください。");
             setTimeout(() => {
               const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
               window.open(tweetUrl, "_blank");
             }, 1000);
           } catch (e) {
-            showModal("コピーに失敗しました。保存してから投稿してください。")
+            showModal("コピーに失敗しました。保存してから投稿してください。");
           }
         };
 
@@ -239,11 +229,13 @@ document.getElementById("capture").addEventListener("click", async () => {
   };
 });
 
+// カメラ切り替え
 document.getElementById("switchCamera").addEventListener("click", async () => {
   useFrontCamera = !useFrontCamera;
   await startCamera();
 });
 
+// モーダル制御（使い方表示）
 window.addEventListener("load", () => {
   const modal = document.getElementById("modal");
   const closeBtn = document.getElementById("closeModal");
@@ -254,12 +246,6 @@ window.addEventListener("load", () => {
   });
   openBtn.addEventListener("click", () => {
     modal.style.display = "flex";
-  });
-
-  document.getElementById("tweet").addEventListener("click", () => {
-    const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(url, "_blank");
   });
 
   const loading = document.getElementById("loading");
@@ -274,6 +260,30 @@ window.addEventListener("load", () => {
   }, delay);
 });
 
+// 投稿ボタン（トップ画面用）
+document.getElementById("tweet")?.addEventListener("click", () => {
+  const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  window.open(url, "_blank");
+});
+
+// モーダル表示
+function showModal(message) {
+  const modal = document.createElement("div");
+  modal.className = "custom-modal";
+  modal.innerHTML = `
+    <div class="custom-modal-content">
+      <p>${message}</p>
+      <button class="close-modal">OK</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector(".close-modal").addEventListener("click", () => {
+    document.body.removeChild(modal);
+  });
+}
+
+// Service Worker 登録
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js")
     .then((reg) => console.log("SW registered", reg))
