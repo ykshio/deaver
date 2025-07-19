@@ -91,8 +91,15 @@ label.addEventListener("click", () => {
     label.classList.replace(labelPositions[labelIndex], labelPositions[labelIndex = (labelIndex + 1) % 4]);
 });
 
-// 撮影・画像合成・保存・再起動
+// 撮影・画像合成・保存・共有メニュー表示
 document.getElementById("capture").addEventListener("click", async () => {
+    // シャッター音再生
+    const shutterSound = document.getElementById("shutterSound");
+    if (shutterSound) {
+        shutterSound.currentTime = 0;
+        shutterSound.play().catch(err => console.warn("音声再生に失敗:", err));
+    }
+
     canvas.width = STANDARD_WIDTH;
     canvas.height = STANDARD_HEIGHT;
     const ctx = canvas.getContext("2d");
@@ -147,24 +154,58 @@ document.getElementById("capture").addEventListener("click", async () => {
                 if (!blob) return;
 
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "photo.png";
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
 
-                if (navigator.clipboard && ClipboardItem) {
-                    try {
-                        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-                        console.log("クリップボードにコピーしました");
-                    } catch (e) {
-                        console.warn("クリップボードコピーに失敗", e);
-                    }
+                // プレビュー表示＆共有メニュー開く
+                const previewImg = document.getElementById("previewImage");
+                previewImg.src = url;
+                document.getElementById("shareMenu").classList.add("active");
+
+                // 保存ボタン
+                document.getElementById("saveBtn").onclick = () => {
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "photo.png";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                };
+
+                // コピー機能
+                if (navigator.clipboard && window.ClipboardItem) {
+                    document.getElementById("copyBtn").onclick = async () => {
+                        try {
+                            await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+                            alert("クリップボードにコピーしました！");
+                        } catch (e) {
+                            alert("コピーに失敗しました");
+                            console.warn(e);
+                        }
+                    };
+                } else {
+                    document.getElementById("copyBtn").disabled = true;
+                    document.getElementById("copyBtn").title = "このブラウザは対応していません";
                 }
 
-                await startCamera(); // 再起動
+                // Xに投稿
+                document.getElementById("tweetBtn").onclick = () => {
+                    const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+                    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                    window.open(tweetUrl, "_blank");
+                };
+
+                // Instagram案内
+                document.getElementById("instagramBtn").onclick = () => {
+                    alert("Instagramへの直接投稿はできません。写真を保存してからInstagramアプリで投稿してください。");
+                };
+
+                // カメラに戻るボタン
+                document.getElementById("backToCameraBtn").onclick = () => {
+                    document.getElementById("shareMenu").classList.remove("active");
+                    startCamera();
+                };
+
+                // カメラはここで停止しない（ユーザーが戻るまでプレビュー維持）
             }, "image/png");
         };
     };
@@ -176,16 +217,44 @@ document.getElementById("switchCamera").addEventListener("click", async () => {
     await startCamera();
 });
 
-// Tweet投稿（HTMLでも設定済みだが冗長性を持たせて保持）
-document.getElementById("tweet").addEventListener("click", () => {
-    const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(url, "_blank");
+// 使い方モーダル制御
+window.addEventListener("load", () => {
+    const modal = document.getElementById("modal");
+    const closeBtn = document.getElementById("closeModal");
+    const openBtn = document.getElementById("openModal");
+
+    closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    openBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+    });
+
+    // Xに投稿（メニューボタン）
+    document.getElementById("tweet").addEventListener("click", () => {
+        const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+        window.open(url, "_blank");
+    });
+
+    // ローディング画面制御
+    const loading = document.getElementById("loading");
+    const MIN_LOADING_TIME = 1000;
+    const start = performance.now();
+
+    const elapsed = performance.now() - start;
+    const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
+
+    setTimeout(() => {
+        loading.classList.add("hide");
+        setTimeout(() => loading.style.display = "none", 500);
+    }, delay);
 });
 
 // Service Worker登録（PWA対応）
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
         .then(reg => console.log("SW registered", reg))
-        .catch(console.error);
+        .catch(err => console.warn("SW registration failed", err));
 }
