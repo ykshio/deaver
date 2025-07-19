@@ -51,7 +51,6 @@
         <div class="loading-text">Loading...</div>
     </div>
 
-
     <div id="container">
         <video id="camera" autoplay playsinline></video>
         <img id="character" src="images/deaver_default.png" alt="キャラクター" draggable="false" />
@@ -89,8 +88,6 @@
         </div>
     </div>
 
-
-
     <!-- 操作説明モーダル -->
     <div id="modal" class="modal">
         <div class="modal-content">
@@ -106,79 +103,22 @@
         </div>
     </div>
 
+    <!-- 撮影後プレビュー・共有メニュー -->
+    <div id="shareMenu">
+        <div class="modal-content">
+            <h2>写真をシェア</h2>
+            <img id="previewImage" alt="撮影画像" style="max-width: 100%; border-radius: 12px;" />
+            <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+                <button id="saveBtn">📥 スマホに保存</button>
+                <button id="copyBtn">📋 コピー</button>
+                <button id="tweetBtn">🐦 X に投稿</button>
+                <button id="instagramBtn">📸 Instagram に投稿</button>
+                <button id="backToCameraBtn">🔙 カメラに戻る</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
-    <script>
-        window.addEventListener("load", () => {
-            const modal = document.getElementById("modal");
-            const closeBtn = document.getElementById("closeModal");
-            const openBtn = document.getElementById("openModal");
-
-            closeBtn.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-
-            openBtn.addEventListener("click", () => {
-                modal.style.display = "flex";
-            });
-
-            // Twitter投稿処理
-            document.getElementById("tweet").addEventListener("click", () => {
-                const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-                window.open(url, "_blank");
-            });
-        });
-        // ローディング画面の表示時間を制御
-        window.addEventListener("load", () => {
-            const loading = document.getElementById("loading");
-
-            // 最低1秒表示
-            const MIN_LOADING_TIME = 1000;
-            const start = performance.now();
-
-            // 他の初期化処理（例：モーダルやイベントなど）
-            const modal = document.getElementById("modal");
-            const closeBtn = document.getElementById("closeModal");
-            closeBtn.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-
-            document.getElementById("openModal").addEventListener("click", () => {
-                modal.style.display = "flex";
-            });
-
-            // Tweet投稿処理
-            document.getElementById("tweet").addEventListener("click", () => {
-                const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-                const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-                window.open(url, "_blank");
-            });
-
-            // 最低表示時間を確保してからローディング非表示
-            const elapsed = performance.now() - start;
-            const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
-
-            setTimeout(() => {
-                loading.classList.add("hide");
-                setTimeout(() => loading.style.display = "none", 500); // フェード完了後に非表示
-            }, delay);
-
-        });
-
-        // 撮影ボタンにシャッター音を追加
-        document.getElementById("capture").addEventListener("click", () => {
-            const shutterSound = document.getElementById("shutterSound");
-            if (shutterSound) {
-                shutterSound.currentTime = 0;
-                shutterSound.play().catch(err => console.warn("音声再生に失敗:", err));
-            }
-
-            // その後の画像合成処理…
-        });
-
-
-    </script>
-
 </body>
 
 </html>
