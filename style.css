@@ -1,11 +1,16 @@
 /* 基本設定 */
-body,
-html {
+html, body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
   height: 100%;
   overflow: hidden;
+
+  /* iOS安全領域を考慮 */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: black;
+  overscroll-behavior-y: contain;
 }
 
 #container {
@@ -32,49 +37,6 @@ video#camera {
   left: 50%;
   transform: translate(-50%, -50%);
   touch-action: none;
-}
-
-/* モーダル（使い方） */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100dvh;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.modal-content {
-  background: white;
-  padding: 24px 32px;
-  border-radius: 12px;
-  max-width: 90vw;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-.modal-content h2 {
-  margin-top: 0;
-}
-
-.modal-content ul {
-  text-align: left;
-  margin-bottom: 20px;
-  padding-left: 1.2em;
-}
-
-.modal-content button {
-  padding: 10px 24px;
-  font-size: 16px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
 /* キャラクターラベル位置選択 */
@@ -113,7 +75,7 @@ video#camera {
 /* 📸 メニューバー全体（5分割構成） */
 #menuBar {
   position: fixed;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);
   width: 100%;
   height: 88px;
   background: rgba(0, 0, 0, 0.6);
@@ -253,21 +215,50 @@ video#camera {
   }
 }
 
-/* 共有メニュー */
-.share-button {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
+/* モーダル（使い方） */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 100;
 }
 
+.modal-content {
+  background: white;
+  padding: 24px 32px;
+  border-radius: 12px;
+  max-width: 90vw;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content ul {
+  text-align: left;
+  margin-bottom: 20px;
+  padding-left: 1.2em;
+}
+
+.modal-content button {
+  padding: 10px 24px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* 共有メニュー */
 #shareMenu {
   display: none;
   position: fixed;
@@ -275,8 +266,26 @@ video#camera {
   background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
+  z-index: 1000;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 #shareMenu.active {
   display: flex;
+}
+
+#shareMenu .modal-content {
+  max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
+  overflow-y: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* 共有メニュー表示時にメニューバー・ラベル非表示 */
+#shareMenu.active ~ #menuBar,
+#shareMenu.active ~ #characterLabel {
+  display: none !important;
 }
