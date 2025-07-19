@@ -1,15 +1,15 @@
+// JavaScript 全体
 const video = document.getElementById("camera");
 const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
 const label = document.getElementById("characterLabel");
-const menuBar = document.getElementById("menuBar"); // メニューバー要素
+const menuBar = document.getElementById("menuBar");
 
 const STANDARD_WIDTH = 1080;
 const STANDARD_HEIGHT = 1920;
 
 let useFrontCamera = false;
 
-// 共有メニュー表示・非表示と連動してラベル・メニューバー表示制御
 function toggleShareMenu(show) {
   const shareMenu = document.getElementById("shareMenu");
   if (show) {
@@ -23,7 +23,6 @@ function toggleShareMenu(show) {
   }
 }
 
-// カメラ起動・再起動用関数
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -43,13 +42,12 @@ async function startCamera() {
     video.srcObject = stream;
     await video.play();
   } catch (err) {
-    alert("カメラの起動に失敗しました。ブラウザの設定を確認してください。");
+    showModal("カメラの起動に失敗しました。ブラウザの設定を確認してください。");
     console.error(err);
   }
 }
 startCamera();
 
-// キャラ画像変更（タップ）
 const characterImages = [
   "images/deaver_default.png",
   "images/deaver_front.png",
@@ -60,12 +58,8 @@ let currentIndex = 0;
 character.src = characterImages[currentIndex];
 
 let touchMoved = false;
-character.addEventListener("touchstart", () => {
-  touchMoved = false;
-});
-character.addEventListener("touchmove", () => {
-  touchMoved = true;
-});
+character.addEventListener("touchstart", () => { touchMoved = false; });
+character.addEventListener("touchmove", () => { touchMoved = true; });
 character.addEventListener("touchend", () => {
   if (!touchMoved) {
     currentIndex = (currentIndex + 1) % characterImages.length;
@@ -73,13 +67,9 @@ character.addEventListener("touchend", () => {
   }
 });
 
-// キャラ移動＆ピンチズーム
-let scale = 1,
-  lastScale = 1;
-let posX = window.innerWidth / 2,
-  posY = window.innerHeight / 2;
-let startX = 0,
-  startY = 0;
+let scale = 1, lastScale = 1;
+let posX = window.innerWidth / 2, posY = window.innerHeight / 2;
+let startX = 0, startY = 0;
 
 character.addEventListener("touchstart", (e) => {
   if (e.touches.length === 1) {
@@ -89,27 +79,21 @@ character.addEventListener("touchstart", (e) => {
     lastScale = scale;
   }
 });
+character.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    posX = e.touches[0].clientX - startX;
+    posY = e.touches[0].clientY - startY;
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    scale = lastScale * (Math.hypot(dx, dy) / 200);
+  }
+  character.style.left = `${posX}px`;
+  character.style.top = `${posY}px`;
+  character.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}, { passive: false });
 
-character.addEventListener(
-  "touchmove",
-  (e) => {
-    e.preventDefault();
-    if (e.touches.length === 1) {
-      posX = e.touches[0].clientX - startX;
-      posY = e.touches[0].clientY - startY;
-    } else if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      scale = lastScale * (Math.hypot(dx, dy) / 200);
-    }
-    character.style.left = `${posX}px`;
-    character.style.top = `${posY}px`;
-    character.style.transform = `translate(-50%, -50%) scale(${scale})`;
-  },
-  { passive: false }
-);
-
-// ラベル位置切り替え
 const labelPositions = [
   "label-top-left",
   "label-top-right",
@@ -125,9 +109,22 @@ label.addEventListener("click", () => {
   );
 });
 
-// 撮影・画像合成・保存・共有メニュー表示
+function showModal(message) {
+  const modal = document.createElement("div");
+  modal.className = "custom-modal";
+  modal.innerHTML = `
+    <div class="custom-modal-content">
+      <p>${message}</p>
+      <button class="close-modal">OK</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector(".close-modal").addEventListener("click", () => {
+    document.body.removeChild(modal);
+  });
+}
+
 document.getElementById("capture").addEventListener("click", async () => {
-  // シャッター音再生
   const shutterSound = document.getElementById("shutterSound");
   if (shutterSound) {
     shutterSound.currentTime = 0;
@@ -188,13 +185,9 @@ document.getElementById("capture").addEventListener("click", async () => {
         if (!blob) return;
 
         const url = URL.createObjectURL(blob);
-
-        // プレビュー表示＆共有メニュー開く
-        const previewImg = document.getElementById("previewImage");
-        previewImg.src = url;
+        document.getElementById("previewImage").src = url;
         toggleShareMenu(true);
 
-        // 保存ボタン
         document.getElementById("saveBtn").onclick = () => {
           const a = document.createElement("a");
           a.href = url;
@@ -205,72 +198,38 @@ document.getElementById("capture").addEventListener("click", async () => {
           URL.revokeObjectURL(url);
         };
 
-        // コピー機能
-        if (navigator.clipboard && window.ClipboardItem) {
-          document.getElementById("copyBtn").onclick = async () => {
-            try {
-              await navigator.clipboard.write([
-                new ClipboardItem({ "image/png": blob }),
-              ]);
-              alert("クリップボードにコピーしました！");
-            } catch (e) {
-              alert("コピーに失敗しました");
-              console.warn(e);
-            }
-          };
-        } else {
-          document.getElementById("copyBtn").disabled = true;
-          document.getElementById("copyBtn").title =
-            "このブラウザは対応していません";
-        }
-
-        // Xに投稿
-        document.getElementById("tweetBtn").onclick = async () => {
-          const text =
-            "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-
-          if (!navigator.clipboard || !window.ClipboardItem) {
-            alert(
-              "このブラウザは画像コピーに対応していません。写真を保存してから投稿してください。"
-            );
-            const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-              text
-            )}`;
-            window.open(tweetUrl, "_blank");
-            return;
+        document.getElementById("copyBtn").onclick = async () => {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob })
+            ]);
+            showModal("クリップボードにコピーしました！");
+          } catch (e) {
+            showModal("コピーに失敗しました");
           }
+        };
+
+        document.getElementById("tweetBtn").onclick = async () => {
+          const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
 
           try {
-            // 画像をコピー
             await navigator.clipboard.write([
-              new ClipboardItem({ "image/png": blob }),
+              new ClipboardItem({ "image/png": blob })
             ]);
-
-            // カスタムダイアログ風の confirm
-            const proceed = confirm(
-              "コピーしました。\n「投稿する」を押すとXの投稿画面に遷移します。\n画像はペーストしてください。"
-            );
-
-            if (proceed) {
-              const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                text
-              )}`;
+            showModal("コピーしました！\nXの投稿画面が開きます。画像はペーストしてください。")
+            setTimeout(() => {
+              const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
               window.open(tweetUrl, "_blank");
-            }
+            }, 1000);
           } catch (e) {
-            alert("コピーに失敗しました。写真を保存してから投稿してください。");
-            console.warn(e);
+            showModal("コピーに失敗しました。保存してから投稿してください。")
           }
         };
 
-        // Instagram案内
         document.getElementById("instagramBtn").onclick = () => {
-          alert(
-            "Instagramへの直接投稿はできません。写真を保存してからInstagramアプリで投稿してください。"
-          );
+          showModal("Instagramへの直接投稿はできません。写真を保存してInstagramアプリから投稿してください。");
         };
 
-        // カメラに戻るボタン
         document.getElementById("backToCameraBtn").onclick = () => {
           toggleShareMenu(false);
           startCamera();
@@ -280,13 +239,11 @@ document.getElementById("capture").addEventListener("click", async () => {
   };
 });
 
-// カメラ切替
 document.getElementById("switchCamera").addEventListener("click", async () => {
   useFrontCamera = !useFrontCamera;
   await startCamera();
 });
 
-// 使い方モーダル制御
 window.addEventListener("load", () => {
   const modal = document.getElementById("modal");
   const closeBtn = document.getElementById("closeModal");
@@ -295,26 +252,19 @@ window.addEventListener("load", () => {
   closeBtn.addEventListener("click", () => {
     modal.style.display = "none";
   });
-
   openBtn.addEventListener("click", () => {
     modal.style.display = "flex";
   });
 
-  // Xに投稿（メニューボタン）
   document.getElementById("tweet").addEventListener("click", () => {
-    const text =
-      "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      text
-    )}`;
+    const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
   });
 
-  // ローディング画面制御
   const loading = document.getElementById("loading");
   const MIN_LOADING_TIME = 1000;
   const start = performance.now();
-
   const elapsed = performance.now() - start;
   const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
 
@@ -324,23 +274,8 @@ window.addEventListener("load", () => {
   }, delay);
 });
 
-// Service Worker登録（PWA対応）
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/service-worker.js")
+  navigator.serviceWorker.register("/service-worker.js")
     .then((reg) => console.log("SW registered", reg))
     .catch((err) => console.warn("SW registration failed", err));
-}
-
-function showNotification(message) {
-  const modal = document.getElementById("notificationModal");
-  const messageElem = document.getElementById("notificationMessage");
-  const closeBtn = document.getElementById("notificationCloseBtn");
-
-  messageElem.textContent = message;
-  modal.classList.add("active");
-
-  closeBtn.onclick = () => {
-    modal.classList.remove("active");
-  };
 }
