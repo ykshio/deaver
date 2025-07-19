@@ -2,11 +2,26 @@ const video = document.getElementById("camera");
 const character = document.getElementById("character");
 const canvas = document.getElementById("canvas");
 const label = document.getElementById("characterLabel");
+const menuBar = document.getElementById("menuBar");  // メニューバー要素
 
 const STANDARD_WIDTH = 1080;
 const STANDARD_HEIGHT = 1920;
 
 let useFrontCamera = false;
+
+// 共有メニュー表示・非表示と連動してラベル・メニューバー表示制御
+function toggleShareMenu(show) {
+    const shareMenu = document.getElementById("shareMenu");
+    if (show) {
+        shareMenu.classList.add("active");
+        label.style.display = "none";
+        menuBar.style.display = "none";
+    } else {
+        shareMenu.classList.remove("active");
+        label.style.display = "";
+        menuBar.style.display = "";
+    }
+}
 
 // カメラ起動・再起動用関数
 async function startCamera() {
@@ -158,7 +173,7 @@ document.getElementById("capture").addEventListener("click", async () => {
                 // プレビュー表示＆共有メニュー開く
                 const previewImg = document.getElementById("previewImage");
                 previewImg.src = url;
-                document.getElementById("shareMenu").classList.add("active");
+                toggleShareMenu(true);
 
                 // 保存ボタン
                 document.getElementById("saveBtn").onclick = () => {
@@ -201,11 +216,10 @@ document.getElementById("capture").addEventListener("click", async () => {
 
                 // カメラに戻るボタン
                 document.getElementById("backToCameraBtn").onclick = () => {
-                    document.getElementById("shareMenu").classList.remove("active");
+                    toggleShareMenu(false);
                     startCamera();
                 };
 
-                // カメラはここで停止しない（ユーザーが戻るまでプレビュー維持）
             }, "image/png");
         };
     };
