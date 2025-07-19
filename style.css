@@ -258,7 +258,7 @@ video#camera {
   cursor: pointer;
 }
 
-/* 共有メニュー */
+/* 共有メニューの背景・表示設定 */
 #shareMenu {
   display: none;
   position: fixed;
@@ -278,7 +278,8 @@ video#camera {
 #shareMenu .modal-content {
   max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
   overflow-y: auto;
-  background: white;
+  background: black; /* "blsck" のタイプミス修正 */
+  color: white;
   padding: 20px;
   border-radius: 12px;
   text-align: center;
@@ -288,4 +289,25 @@ video#camera {
 #shareMenu.active ~ #menuBar,
 #shareMenu.active ~ #characterLabel {
   display: none !important;
+}
+
+/* ボタンを背景なし、枠なしにし、アイコンサイズ調整 */
+#shareMenu button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 8px;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ボタン内のSVGアイコンのサイズ指定 */
+#shareMenu button img {
+  width: 36px;
+  height: 36px;
+  display: block;
+  pointer-events: none;
 }
