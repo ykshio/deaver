@@ -61,12 +61,8 @@ character.src = characterImages[currentIndex];
 
 // タップで切り替え
 let touchMoved = false;
-character.addEventListener("touchstart", () => {
-  touchMoved = false;
-});
-character.addEventListener("touchmove", () => {
-  touchMoved = true;
-});
+character.addEventListener("touchstart", () => (touchMoved = false));
+character.addEventListener("touchmove", () => (touchMoved = true));
 character.addEventListener("touchend", () => {
   if (!touchMoved) {
     currentIndex = (currentIndex + 1) % characterImages.length;
@@ -75,12 +71,9 @@ character.addEventListener("touchend", () => {
 });
 
 // キャラクター移動 & 拡大縮小
-let scale = 1,
-  lastScale = 1;
-let posX = window.innerWidth / 2,
-  posY = window.innerHeight / 2;
-let startX = 0,
-  startY = 0;
+let scale = 1, lastScale = 1;
+let posX = window.innerWidth / 2, posY = window.innerHeight / 2;
+let startX = 0, startY = 0;
 
 character.addEventListener("touchstart", (e) => {
   if (e.touches.length === 1) {
@@ -90,39 +83,27 @@ character.addEventListener("touchstart", (e) => {
     lastScale = scale;
   }
 });
-character.addEventListener(
-  "touchmove",
-  (e) => {
-    e.preventDefault();
-    if (e.touches.length === 1) {
-      posX = e.touches[0].clientX - startX;
-      posY = e.touches[0].clientY - startY;
-    } else if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      scale = lastScale * (Math.hypot(dx, dy) / 200);
-    }
-    character.style.left = `${posX}px`;
-    character.style.top = `${posY}px`;
-    character.style.transform = `translate(-50%, -50%) scale(${scale})`;
-  },
-  { passive: false }
-);
+character.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    posX = e.touches[0].clientX - startX;
+    posY = e.touches[0].clientY - startY;
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    scale = lastScale * (Math.hypot(dx, dy) / 200);
+  }
+  character.style.left = `${posX}px`;
+  character.style.top = `${posY}px`;
+  character.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}, { passive: false });
 
 // ラベル位置切替
-const labelPositions = [
-  "label-top-left",
-  "label-top-right",
-  "label-bottom-right",
-  "label-bottom-left",
-];
+const labelPositions = ["label-top-left", "label-top-right", "label-bottom-right", "label-bottom-left"];
 let labelIndex = 3;
 label.classList.add(labelPositions[labelIndex]);
 label.addEventListener("click", () => {
-  label.classList.replace(
-    labelPositions[labelIndex],
-    labelPositions[(labelIndex = (labelIndex + 1) % 4)]
-  );
+  label.classList.replace(labelPositions[labelIndex], labelPositions[labelIndex = (labelIndex + 1) % 4]);
 });
 
 // 撮影処理
@@ -188,6 +169,7 @@ document.getElementById("capture").addEventListener("click", async () => {
 
         const url = URL.createObjectURL(blob);
         document.getElementById("previewImage").src = url;
+        document.getElementById("twitterPreviewImage").src = url;
         toggleShareMenu(true);
 
         document.getElementById("saveBtn").onclick = () => {
@@ -212,32 +194,35 @@ document.getElementById("capture").addEventListener("click", async () => {
         };
 
         document.getElementById("tweetBtn").onclick = async () => {
-          const text =
-            "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-          const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            text
-          )}`;
-
-          // X投稿用の空ウィンドウ（ポップアップブロック対策）
-          const tweetWindow = window.open("", "_blank");
+          const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+          const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
 
           try {
             await navigator.clipboard.write([
               new ClipboardItem({ "image/png": blob }),
             ]);
+            toggleShareMenu(false);
+            document.getElementById("twitterModal").style.display = "flex";
 
-            showTweetModal(tweetWindow, tweetUrl);
+            // 投稿ボタン処理
+            document.getElementById("confirmTweetBtn").onclick = () => {
+              window.open(tweetUrl, "_blank");
+              document.getElementById("twitterModal").style.display = "none";
+            };
+
+            // キャンセルボタン処理
+            document.getElementById("cancelTweetBtn").onclick = () => {
+              document.getElementById("twitterModal").style.display = "none";
+              toggleShareMenu(true);
+            };
           } catch (e) {
             alert("コピーに失敗しました。保存してから投稿してください。");
-            if (tweetWindow) tweetWindow.close();
             console.error(e);
           }
         };
 
         document.getElementById("instagramBtn").onclick = () => {
-          alert(
-            "Instagramへの直接投稿はできません。写真を保存してInstagramアプリから投稿してください。"
-          );
+          alert("Instagramへの直接投稿はできません。写真を保存してInstagramアプリから投稿してください。");
         };
 
         document.getElementById("backToCameraBtn").onclick = () => {
@@ -261,12 +246,8 @@ window.addEventListener("load", () => {
   const closeBtn = document.getElementById("closeModal");
   const openBtn = document.getElementById("openModal");
 
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-  openBtn.addEventListener("click", () => {
-    modal.style.display = "flex";
-  });
+  closeBtn.addEventListener("click", () => modal.style.display = "none");
+  openBtn.addEventListener("click", () => modal.style.display = "flex");
 
   const loading = document.getElementById("loading");
   const MIN_LOADING_TIME = 1000;
@@ -282,11 +263,8 @@ window.addEventListener("load", () => {
 
 // 投稿ボタン（トップ画面用）
 document.getElementById("tweet")?.addEventListener("click", () => {
-  const text =
-    "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
-  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    text
-  )}`;
+  const text = "ディーバーくんと撮影したよ📸\n#ディーバーくん #TDU #東京電機大学";
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
   window.open(url, "_blank");
 });
 
@@ -312,32 +290,4 @@ if ("serviceWorker" in navigator) {
     .register("/service-worker.js")
     .then((reg) => console.log("SW registered", reg))
     .catch((err) => console.warn("SW registration failed", err));
-}
-
-function showTweetModal(tweetWindow, tweetUrl) {
-  const modal = document.createElement("div");
-  modal.className = "custom-modal";
-  modal.innerHTML = `
-    <div class="custom-modal-content">
-      <p>コピーしました。<br>『投稿』を押すとXの投稿画面に遷移します。<br>画像は貼り付け（ペースト）してください。</p>
-      <div style="margin-top: 16px; display: flex; gap: 10px; justify-content: center;">
-        <button class="tweet-cancel">キャンセル</button>
-        <button class="tweet-post">投稿</button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-
-  modal.querySelector(".tweet-cancel").addEventListener("click", () => {
-    document.body.removeChild(modal);
-    if (tweetWindow) tweetWindow.close();
-  });
-
-  modal.querySelector(".tweet-post").addEventListener("click", () => {
-    if (tweetWindow) {
-      tweetWindow.location.href = tweetUrl;
-    }
-    document.body.removeChild(modal);
-  });
 }
